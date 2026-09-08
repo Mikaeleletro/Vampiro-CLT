@@ -19,24 +19,24 @@ class Inimigo():
         self.y = y
         self.x = x
 
-    def ataque(self):
-        
+    def ataque(self,jogador):
+
         tempo = 30
         distancia_x = abs(self.x - jogador.x)
         distancia_y = abs(self.y - jogador.y)
         distancia = ((distancia_x)**2+(distancia_y)**2)**(1/2)
 
         if distancia <= 10:
-            if tempo > 0:
-                tempo -= 1
-            if tempo == 0:
-                jogador.hp -= 5
-                tempo = 30
+            if jogador.hp == 0:
+                jogador.hp = 0
+            jogador.hp -= 100
+            
 
     def movimento(self):
         
         distancia_x = abs(self.x - 80)
         distancia_y = abs(self.y - 80)
+
         distancia = ((distancia_x)**2+(distancia_y)**2)**(1/2)
         
         if distancia >= 9:
@@ -74,12 +74,13 @@ class Inimigo():
 
 
 class Personagem():
+
     def __init__(self):
         
         self.x = 80
         self.y = 60
         self.direcao = "esquerda"
-        self.hp = 50
+        self.hp = 1000
         
     def movimento(self):
         
@@ -145,21 +146,29 @@ def update():
     jogador.colicao()
     inimigo.movimento()
     inimigo1.movimento()
-    inimigo.ataque()
-    inimigo1.ataque()
+    inimigo.ataque(jogador)
+    inimigo1.ataque(jogador)
 
 def draw():
-    
     pyxel.cls(0)
-    jogador.desenhar()
+    telax = jogador.x
+    telay = jogador.y
+    imagem = 0
+    imagemx= 0
+    imagemy = 0
+    largura = 16
+    altura = 16
+    pyxel.blt(telax,telay,imagem,imagemx,imagemy,largura,altura)
     inimigo.desenhar()
-    coracao.desenhar()
+    if coracao.hp > 0:
+        coracao.desenhar()
     inimigo1.desenhar()
-    inimigo.ataque()
     pyxel.rect(2,2,49*(coracao.hp/50),9,8)
     pyxel.rectb(1,1,50,10,7)
-    pyxel.text(40,10,f"{jogador.hp}",7)
-    
+    pyxel.rect(2,11,49*(jogador.hp/1000),9,8)
+    pyxel.rectb(1,10,50,10,7)
+
 pyxel.init(161,161)
+pyxel.image(0).load(0,0,"personagem.png")
+
 pyxel.run(update,draw)
-        
