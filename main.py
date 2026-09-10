@@ -1,6 +1,5 @@
 #survival vampire
 import pyxel
-
 class Coracao():
 
     def __init__(self):
@@ -12,7 +11,6 @@ class Coracao():
         pyxel.rect(80,80,4,4,7)
 
 class Inimigo():
-
     def __init__(self,x,y):
 
         self.hp = 1
@@ -83,22 +81,34 @@ class Personagem():
         self.hp = 1000
         
     def movimento(self):
-        
+        global walk
+        walk = 0
+
         if pyxel.btn(pyxel.KEY_W):
             self.y -= 2
             self.direcao = "cima"
-            
+            walk += 16
+            if walk == 64:
+                walk = 0
         if pyxel.btn(pyxel.KEY_S):
             self.y += 2
             self.direcao = "baixo"
-            
+            walk += 16
+            if walk == 64:
+                walk = 0
         if pyxel.btn(pyxel.KEY_A):
             self.x -= 2
             self.direcao = "esquerda"
+            walk += 16
+            if walk == 64:
+                walk = 0
             
         if pyxel.btn(pyxel.KEY_D):
             self.x += 2
             self.direcao = "direita"
+            walk += 16
+            if walk == 64:
+                walk = 0
             
     def desenhar(self):
 
@@ -154,20 +164,23 @@ def draw():
     telax = jogador.x
     telay = jogador.y
     imagem = 0
-    imagemx= 0
+    imagemx= walk
     imagemy = 0
     largura = 16
     altura = 16
     pyxel.blt(telax,telay,imagem,imagemx,imagemy,largura,altura)
-    inimigo.desenhar()
     if coracao.hp > 0:
-        coracao.desenhar()
-    inimigo1.desenhar()
-    pyxel.rect(2,2,49*(coracao.hp/50),9,8)
-    pyxel.rectb(1,1,50,10,7)
-    pyxel.rect(2,11,49*(jogador.hp/1000),9,8)
-    pyxel.rectb(1,10,50,10,7)
 
+        coracao.desenhar()
+    if jogador.hp > 0:
+        inimigo1.desenhar()
+        inimigo.desenhar()
+        pyxel.rect(2,2,49*(coracao.hp/50),9,8)
+        pyxel.rectb(1,1,50,10,7)
+        pyxel.rect(2,11,49*(jogador.hp/1000),9,8)
+        pyxel.rectb(1,10,50,10,7)
+    else:
+        pyxel.text(50,50,"Voce Perdeu!",7)
 pyxel.init(161,161)
 pyxel.image(0).load(0,0,"personagem.png")
 
