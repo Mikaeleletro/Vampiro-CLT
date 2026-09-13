@@ -1,187 +1,59 @@
-#survival vampire
 import pyxel
-class Coracao():
 
-    def __init__(self):
-
-        self.hp = 50
-
-    def desenhar(self):
-
-        pyxel.rect(80,80,4,4,7)
-
-class Inimigo():
-    def __init__(self,x,y):
-
-        self.hp = 1
-        self.y = y
-        self.x = x
-
-    def ataque(self,jogador):
-
-        tempo = 30
-        distancia_x = abs(self.x - jogador.x)
-        distancia_y = abs(self.y - jogador.y)
-        distancia = ((distancia_x)**2+(distancia_y)**2)**(1/2)
-
-        if distancia <= 10:
-            if jogador.hp == 0:
-                jogador.hp = 0
-            jogador.hp -= 100
-            
-
-    def movimento(self):
-        
-        distancia_x = abs(self.x - 80)
-        distancia_y = abs(self.y - 80)
-
-        distancia = ((distancia_x)**2+(distancia_y)**2)**(1/2)
-        
-        if distancia >= 9:
-            
-            if coracao.hp != 0:
-                
-                if self.x > 80:
-                    self.x -= 1
-                if self.x < 80:
-                    self.x += 1
-                if self.y > 80:
-                    self.y -= 1
-                if self.y < 80:
-                    self.y += 1
-                    
-        if distancia <= 10:
-            coracao.hp -= 1
-            
-        if coracao.hp <= 0:
-            coracao.hp = 0
-            
-        if coracao.hp == 0: 
-              
-            if jogador.x < self.x:
-                self.x -= 1
-            if jogador.x > self.x:
-                self.x += 1
-            if jogador.y < self.y:
-                self.y -= 1
-            if jogador.y > self.y:
-                self.y += 1
-
-    def desenhar(self):
-        pyxel.pset(self.x,self.y,7)
-
-
-class Personagem():
-
-    def __init__(self):
-        
-        self.x = 80
-        self.y = 60
-        self.direcao = "esquerda"
-        self.hp = 1000
-        
-    def movimento(self):
-        global walk
-        walk = 0
-
-        if pyxel.btn(pyxel.KEY_W):
-            self.y -= 2
-            self.direcao = "cima"
-            walk += 16
-            if walk == 64:
-                walk = 0
-        if pyxel.btn(pyxel.KEY_S):
-            self.y += 2
-            self.direcao = "baixo"
-            walk += 16
-            if walk == 64:
-                walk = 0
-        if pyxel.btn(pyxel.KEY_A):
-            self.x -= 2
-            self.direcao = "esquerda"
-            walk += 16
-            if walk == 64:
-                walk = 0
-            
-        if pyxel.btn(pyxel.KEY_D):
-            self.x += 2
-            self.direcao = "direita"
-            walk += 16
-            if walk == 64:
-                walk = 0
-            
-    def desenhar(self):
-
-        x = pyxel.mouse_x
-        y = pyxel.mouse_y
-        
-        pyxel.rect(self.x,self.y,2,2,7)
-        if pyxel.btn(pyxel.KEY_SPACE):
-            pyxel.line(self.x,self.y,x,y,7)
-        
-        if self.direcao == "cima":
-            pyxel.rect(self.x,self.y-2,2,2,8)
-            
-        if self.direcao == "baixo":
-            pyxel.rect(self.x,self.y+2,2,2,8)
-            
-        if self.direcao == "direita":
-            pyxel.rect(self.x+2,self.y,2,2,8)
-            
-        if self.direcao == "esquerda":
-            pyxel.rect(self.x-2,self.y,2,2,8)
-            
-    def colicao(self):
-        
-        if self.x <= 0:
-            self.x = 0
-            
-        if self.x >= 159:
-            self.x = 159
-            
-        if self.y >= 159:
-            self.y = 159
-            
-        if self.y <= 0:
-            self.y = 0
-    
+from jogador import Personagem
+from inimigo import Inimigo
+from projetil import Projetil
+projetis = []
 jogador = Personagem()
-inimigo = Inimigo(5,5)
-inimigo1 = Inimigo(100,100)
-coracao = Coracao()
+
+inimigo = Inimigo(5, 5)
+inimigo1 = Inimigo(100, 100)
+
 
 def update():
     
     jogador.movimento()
-    jogador.colicao()
-    inimigo.movimento()
-    inimigo1.movimento()
+    jogador.colisao()
+
+    inimigo.movimento(jogador)
+    inimigo1.movimento(jogador)
+
     inimigo.ataque(jogador)
     inimigo1.ataque(jogador)
+    if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+
+        projetil = Projetil(
+            jogador.x,
+            jogador.y,
+            pyxel.mouse_x,
+            pyxel.mouse_y
+        )
+        projetis.append(projetil)
+    for projetil in projetis:
+        projetil.movimento()
 
 def draw():
-    pyxel.cls(0)
-    telax = jogador.x
-    telay = jogador.y
-    imagem = 0
-    imagemx= walk
-    imagemy = 0
-    largura = 16
-    altura = 16
-    pyxel.blt(telax,telay,imagem,imagemx,imagemy,largura,altura)
-    if coracao.hp > 0:
 
-        coracao.desenhar()
+    pyxel.cls(0)
+
     if jogador.hp > 0:
+
         inimigo1.desenhar()
         inimigo.desenhar()
-        pyxel.rect(2,2,49*(coracao.hp/50),9,8)
-        pyxel.rectb(1,1,50,10,7)
-        pyxel.rect(2,11,49*(jogador.hp/1000),9,8)
-        pyxel.rectb(1,10,50,10,7)
-    else:
-        pyxel.text(50,50,"Voce Perdeu!",7)
-pyxel.init(161,161)
-pyxel.image(0).load(0,0,"personagem.png")
+        jogador.desenhar()
 
-pyxel.run(update,draw)
+        # Barra do jogador
+        pyxel.rect(2, 11, 49 * (jogador.hp / 1000), 9, 8)
+        pyxel.rectb(1, 10, 50, 10, 7)
+
+    else:
+
+        pyxel.text(50, 50, "Voce Perdeu!", 7)
+    for projetil in projetis:
+        projetil.desenhar()
+
+pyxel.init(161, 161)
+
+pyxel.load("my_resource.pyxres")
+
+pyxel.run(update, draw)
