@@ -35,7 +35,7 @@ def update():
 def draw():
 
     pyxel.cls(0)
-
+    pyxel.pset(jogador.x,jogador.y,7)
     if jogador.hp > 0:
 
         inimigo1.desenhar()
