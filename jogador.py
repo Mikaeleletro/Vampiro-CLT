@@ -8,38 +8,43 @@ class Personagem():
         self.y = 60
         self.direcao = "esquerda"
         self.hp = 1000
-
+        self.walk = 0
+        self.contador_walk = 0
     def movimento(self):
 
         if pyxel.btn(pyxel.KEY_W):
             self.y -= 2
             self.direcao = "cima"
-
-        if pyxel.btn(pyxel.KEY_S):
+            
+        elif pyxel.btn(pyxel.KEY_S):
             self.y += 2
             self.direcao = "baixo"
-
-        if pyxel.btn(pyxel.KEY_A):
+            
+            
+        elif pyxel.btn(pyxel.KEY_A):
             self.x -= 2
             self.direcao = "esquerda"
-
-        if pyxel.btn(pyxel.KEY_D):
+            
+        elif pyxel.btn(pyxel.KEY_D):
             self.x += 2
             self.direcao = "direita"
-
+            
     def desenhar(self):
 
-        pyxel.blt(
-            self.x,
-            self.y,
-            0,
-            0,
-            0,
-            16,
-            16,
-            0
-        )
-
+        if self.direcao == "direita":
+            pyxel.blt(self.x,self.y,0,self.walk,0,16,16,0)
+        if self.direcao == "esquerda":
+            pyxel.blt(self.x,self.y,0,0,0,-(self.walk),16,0)
+        if self.direcao == "baixo":
+            pyxel.blt(self.x,self.y,0,self.walk,16,16,16,0)
+        if self.direcao == "cima":
+            pyxel.blt(self.x,self.y,0,self.walk,32,16,16,0)
+            
+    def animacao(self):
+        self.contador_walk += 1
+        
+        
+          
     def colisao(self):
 
         if self.x <= 0:
