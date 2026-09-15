@@ -3,12 +3,12 @@ import pyxel
 from jogador import Personagem
 from inimigo import Inimigo
 from projetil import Projetil
+
 projetis = []
 jogador = Personagem()
 
 inimigo = Inimigo(5, 5)
 inimigo1 = Inimigo(100, 100)
-
 
 def update():
     

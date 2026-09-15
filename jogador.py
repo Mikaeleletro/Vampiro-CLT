@@ -19,8 +19,7 @@ class Personagem():
         elif pyxel.btn(pyxel.KEY_S):
             self.y += 2
             self.direcao = "baixo"
-            
-            
+
         elif pyxel.btn(pyxel.KEY_A):
             self.x -= 2
             self.direcao = "esquerda"
@@ -33,10 +32,13 @@ class Personagem():
 
         if self.direcao == "direita":
             pyxel.blt(-5+self.x,self.y,0,self.walk,0,16,16,0)
+
         if self.direcao == "esquerda":
-            pyxel.blt(self.x,self.y,0,0,0,-(self.walk),16,0)
+            pyxel.blt(self.x,self.y,0,0,self.walk,-16,16,0)
+
         if self.direcao == "baixo":
             pyxel.blt(self.x,self.y,0,self.walk,16,16,16,0)
+
         if self.direcao == "cima":
             pyxel.blt(self.x,self.y,0,self.walk,32,16,16,0)
             

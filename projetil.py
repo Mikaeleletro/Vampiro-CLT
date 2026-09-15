@@ -12,7 +12,7 @@ class Projetil():
         self.alvo_y = alvo_y
 
         self.velocidade = 3
-
+        self.dano = 1
         direcao_x = alvo_x - x
         direcao_y = alvo_y - y
 

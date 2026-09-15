@@ -31,18 +31,7 @@ class Inimigo():
         self.x += direcao_x * velocidade
         self.y += direcao_y * velocidade
             
-        
-        
 
     def desenhar(self):
 
-        pyxel.blt(
-            self.x,
-            self.y,
-            0,
-            32,
-            0,
-            16,
-            16,
-            0
-        )
+        pyxel.blt(self.x,self.y,0,32,0,16,16,0)
