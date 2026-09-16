@@ -3,27 +3,21 @@ import pyxel
 
 class Projetil():
 
-    def __init__(self, x, y, alvo_x, alvo_y):
+    def __init__(self, x, y, direcao):
 
         self.x = x
         self.y = y
 
-        self.alvo_x = alvo_x
-        self.alvo_y = alvo_y
-
         self.velocidade = 3
         self.dano = 1
-        direcao_x = alvo_x - x
-        direcao_y = alvo_y - y
 
-        distancia = ((direcao_x ** 2) + (direcao_y ** 2)) ** 0.5
+        if direcao == "direita":
+            self.direcao_x = 1
 
-        if distancia != 0:
-            direcao_x /= distancia
-            direcao_y /= distancia
+        elif direcao == "esquerda":
+            self.direcao_x = -1
 
-        self.direcao_x = direcao_x
-        self.direcao_y = direcao_y
+        self.direcao_y = 0
 
     def movimento(self):
 
@@ -31,21 +25,11 @@ class Projetil():
         self.y += self.direcao_y * self.velocidade
 
     def desenhar(self):
-
-        pyxel.rect(
-            self.x,
-            self.y,
-            2,
-            2,
-            11
-        )
-
         tamanho = 5
-
         pyxel.line(
             self.x,
-            self.y,
+            self.y+13,
             self.x + self.direcao_x * tamanho,
-            self.y + self.direcao_y * tamanho,
+            self.y+13,
             7
         )
