@@ -4,19 +4,25 @@ import pyxel
 class Personagem():
 
     def __init__(self):
+
         self.x = 80
-        self.y = 140
+        self.y = 100
+
         self.direcao = "esquerda"
         self.hp = 1000
 
         self.walk = 0
         self.contador_walk = 0
+
         self.vy = 0
         self.aceleracao = 0.8
         self.forca_pulo = -8
-        
+
+        self.no_chao = False
+
+
     def movimento(self):
-            
+
         andando = False
 
         if pyxel.btn(pyxel.KEY_A):
@@ -36,6 +42,7 @@ class Personagem():
             self.walk = 0
             self.contador_walk = 0
 
+
     def animacao(self):
 
         self.contador_walk += 1
@@ -50,15 +57,35 @@ class Personagem():
             elif self.walk == 16:
                 self.walk = 0
 
+
     def desenhar(self):
 
         if self.direcao == "direita":
-            pyxel.blt(self.x - 8,self.y+4,0,self.walk,0,16,16,0)
+            pyxel.blt(
+                self.x - 8,
+                self.y + 1,
+                0,
+                self.walk,
+                0,
+                16,
+                16,
+                0
+            )
 
         if self.direcao == "esquerda":
-            pyxel.blt(self.x-8,self.y+4,0,self.walk,0,-16,16,0)
+            pyxel.blt(
+                self.x - 8,
+                self.y + 1,
+                0,
+                self.walk,
+                0,
+                -16,
+                16,
+                0
+            )
 
-    def colisao(self):
+
+    def colisao(self, tem_chao):
 
         if self.x <= 0:
             self.x = 0
@@ -66,18 +93,30 @@ class Personagem():
         if self.x >= 159:
             self.x = 159
 
-        if self.y >= 140:
-            self.y = 140
-            self.vy = 0
+        if self.vy >= 0:
 
-        if self.y <= 0: 
+            if tem_chao(self.x, self.y + 16):
+
+                self.y = ((self.y + 16) // 8) * 8 - 16
+                self.vy = 0
+                self.no_chao = True
+
+            else:
+                self.no_chao = False
+
+        if self.y <= 0:
             self.y = 0
             self.vy = 0
 
+
     def gravidade(self):
+
         self.vy += self.aceleracao
         self.y += self.vy
-    
+
+
     def pulo(self):
-        if pyxel.btnp(pyxel.KEY_SPACE) and self.y >= 140:
+
+        if pyxel.btnp(pyxel.KEY_SPACE) and self.no_chao:
             self.vy = self.forca_pulo
+            self.no_chao = False
