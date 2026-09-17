@@ -13,7 +13,7 @@ cooldown_tiro = 0
 jogador = Personagem()
 
 inimigos = [
-    Inimigo(50, 50),
+    Inimigo(50, 50,2),
 ]
 
 

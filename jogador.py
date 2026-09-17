@@ -26,12 +26,12 @@ class Personagem():
         andando = False
 
         if pyxel.btn(pyxel.KEY_A):
-            self.x -= 2
+            self.x -= 2.2
             self.direcao = "esquerda"
             andando = True
 
         elif pyxel.btn(pyxel.KEY_D):
-            self.x += 2
+            self.x += 2.2
             self.direcao = "direita"
             andando = True
 
