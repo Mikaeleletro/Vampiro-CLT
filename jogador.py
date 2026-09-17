@@ -5,8 +5,8 @@ class Personagem():
 
     def __init__(self):
 
-        self.x = 80
-        self.y = 100
+        self.x = 4
+        self.y = 135
 
         self.direcao = "esquerda"
         self.hp = 1000
@@ -85,7 +85,7 @@ class Personagem():
             )
 
 
-    def colisao(self, tem_chao):
+    def colisao(self,):
 
         if self.x <= 0:
             self.x = 0
@@ -93,16 +93,9 @@ class Personagem():
         if self.x >= 159:
             self.x = 159
 
-        if self.vy >= 0:
-
-            if tem_chao(self.x, self.y + 16):
-
-                self.y = ((self.y + 16) // 8) * 8 - 16
-                self.vy = 0
-                self.no_chao = True
-
-            else:
-                self.no_chao = False
+        if self.y >= 136:
+            self.y = 136
+            self.vy = 0
 
         if self.y <= 0:
             self.y = 0
@@ -117,6 +110,5 @@ class Personagem():
 
     def pulo(self):
 
-        if pyxel.btnp(pyxel.KEY_SPACE) and self.no_chao:
+        if pyxel.btnp(pyxel.KEY_SPACE):
             self.vy = self.forca_pulo
-            self.no_chao = False

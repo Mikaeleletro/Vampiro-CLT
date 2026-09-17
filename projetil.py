@@ -28,8 +28,8 @@ class Projetil():
         tamanho = 5
         pyxel.line(
             self.x,
-            self.y+13,
+            self.y+10,
             self.x + self.direcao_x * tamanho,
-            self.y+13,
+            self.y+10,
             7
         )

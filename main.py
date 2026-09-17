@@ -5,25 +5,16 @@ from inimigo import Inimigo
 from projetil import Projetil
 
 
-TILE_CHAO = 1
+TILE_CHAO = (0, 6)
 
 projetis = []
 cooldown_tiro = 0
 
 jogador = Personagem()
 
-inimigo = Inimigo(50, 50)
-inimigo1 = Inimigo(100, 100)
-
-
-def tem_chao(x, y):
-
-    tile_x = x // 8
-    tile_y = (y - 153) // 8
-
-    tile = pyxel.tilemaps[0].pget(tile_x, tile_y)
-
-    return tile == (0, 6)
+inimigos = [
+    Inimigo(50, 50),
+]
 
 
 def update():
@@ -33,23 +24,27 @@ def update():
     jogador.movimento()
     jogador.pulo()
     jogador.gravidade()
-    jogador.colisao(tem_chao)
+    jogador.colisao()
 
 
     if cooldown_tiro > 0:
         cooldown_tiro -= 1
 
 
-    inimigo.movimento(jogador)
-    inimigo1.movimento(jogador)
+    # INIMIGOS
+    for inimigo in inimigos:
 
-    inimigo.ataque(jogador)
-    inimigo.colisao(jogador)
+        inimigo.movimento(jogador)
+        for outro in inimigos:
 
-    inimigo1.ataque(jogador)
-    inimigo1.colisao(jogador)
+            if inimigo != outro:
+                inimigo.colisao_inimigo(outro)
+
+        inimigo.ataque(jogador)
+        inimigo.colisao(jogador)
 
 
+    # TIRO
     if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and cooldown_tiro == 0:
 
         novo_projetil = Projetil(
@@ -63,30 +58,38 @@ def update():
         cooldown_tiro = 20
 
 
+    # PROJÉTEIS
     for projetil in projetis:
         projetil.movimento()
+
 
 def draw():
 
     pyxel.cls(0)
 
-    # Tilemap
+    # TILEMAP
     pyxel.bltm(
-    0,
-    153,
-    0,
-    0,
-    0,
-    150,
-    20
-)
+        0,
+        153,
+        0,
+        0,
+        0,
+        150,
+        20
+    )
 
 
     if jogador.hp > 0:
 
         jogador.desenhar()
-        inimigo.desenhar()
 
+
+        # INIMIGOS
+        for inimigo in inimigos:
+            inimigo.desenhar()
+
+
+        # VIDA
         pyxel.rect(
             2,
             11,
@@ -103,6 +106,7 @@ def draw():
             7
         )
 
+
     else:
 
         pyxel.text(
@@ -113,6 +117,7 @@ def draw():
         )
 
 
+    # PROJÉTEIS
     for projetil in projetis:
         projetil.desenhar()
 
