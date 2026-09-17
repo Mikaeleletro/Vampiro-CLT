@@ -119,5 +119,5 @@ class Inimigo():
                 distancia_x /= distancia
                 distancia_y /= distancia
 
-                self.x -= distancia_x * 1
-                self.y -= distancia_y * 1
+                self.x -= distancia_x * 16
+                self.y -= distancia_y * 16
