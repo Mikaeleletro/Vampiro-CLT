@@ -1,5 +1,5 @@
 import pyxel
-#uai4434dd
+#uai
 from jogador import Personagem
 from inimigo import Inimigo
 from projetil import Projetil
