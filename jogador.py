@@ -111,4 +111,5 @@ class Personagem():
     def pulo(self):
 
         if pyxel.btnp(pyxel.KEY_SPACE):
-            self.vy = self.forca_pulo
+            if pyxel.btnp(pyxel.KEY_SPACE):
+                self.vy = self.forca_pulo
