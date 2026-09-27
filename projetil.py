@@ -1,7 +1,7 @@
 import pyxel
 
-
 class Projetil():
+
 
     def __init__(self, x, y, direcao):
 
@@ -24,12 +24,15 @@ class Projetil():
         self.x += self.direcao_x * self.velocidade
         self.y += self.direcao_y * self.velocidade
 
-    def desenhar(self):
+    def desenhar(self, camera_x):
+
         tamanho = 5
+
         pyxel.line(
-            self.x,
+            self.x - camera_x,
             self.y+10,
-            self.x + self.direcao_x * tamanho,
+            self.x - camera_x + self.direcao_x * tamanho,
             self.y+10,
             7
         )
+

@@ -1,6 +1,5 @@
 import pyxel
 
-
 class Personagem():
 
     def __init__(self):
@@ -58,11 +57,11 @@ class Personagem():
                 self.walk = 0
 
 
-    def desenhar(self):
+    def desenhar(self, camera_x):
 
         if self.direcao == "direita":
             pyxel.blt(
-                self.x - 8,
+                self.x - camera_x - 8,
                 self.y + 1,
                 0,
                 self.walk,
@@ -74,7 +73,7 @@ class Personagem():
 
         if self.direcao == "esquerda":
             pyxel.blt(
-                self.x - 8,
+                self.x - camera_x - 8,
                 self.y + 1,
                 0,
                 self.walk,
@@ -85,13 +84,10 @@ class Personagem():
             )
 
 
-    def colisao(self,):
+    def colisao(self):
 
         if self.x <= 0:
             self.x = 0
-
-        if self.x >= 159:
-            self.x = 159
 
         if self.y >= 136:
             self.y = 136

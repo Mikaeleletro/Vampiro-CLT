@@ -1,4 +1,5 @@
 import pyxel
+
 from jogador import Personagem
 from inimigo import Inimigo
 from projetil import Projetil
@@ -8,43 +9,46 @@ TILE_CHAO = (0, 6)
 
 projetis = []
 cooldown_tiro = 0
+camera_x = 0
 
 jogador = Personagem()
 
 inimigos = [
-    Inimigo(50, 50,2),
-    Inimigo(50, 50,1)
+    Inimigo(50, 147, 2),
+    Inimigo(100, 140, 1)
 ]
 
 
 def update():
 
     global cooldown_tiro
+    global camera_x
 
     jogador.movimento()
     jogador.pulo()
     jogador.gravidade()
     jogador.colisao()
 
+    camera_x = jogador.x - 80
+
+    if camera_x < 0:
+        camera_x = 0
 
     if cooldown_tiro > 0:
         cooldown_tiro -= 1
 
-
-    # INIMIGOS
     for inimigo in inimigos:
 
         inimigo.movimento(jogador)
-        for outro in inimigos:
-
-            if inimigo != outro:
-                inimigo.colisao_inimigo(outro)
-
         inimigo.ataque(jogador)
         inimigo.colisao(jogador)
 
+    for i in range(len(inimigos)):
 
-    # TIRO
+        for j in range(i + 1, len(inimigos)):
+
+            inimigos[i].colisao_inimigo(inimigos[j])
+
     if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and cooldown_tiro == 0:
 
         novo_projetil = Projetil(
@@ -57,19 +61,49 @@ def update():
 
         cooldown_tiro = 20
 
+    for projetil in projetis[:]:
 
-    # PROJÉTEIS
-    for projetil in projetis:
         projetil.movimento()
+
+        for inimigo in inimigos:
+
+            inimigo_esquerda = inimigo.x - 10
+            inimigo_direita = inimigo.x + 6
+
+            inimigo_cima = inimigo.y - 10
+            inimigo_baixo = inimigo.y + 6
+
+            projetil_esquerda = projetil.x
+            projetil_direita = projetil.x + 5
+
+            projetil_cima = projetil.y
+            projetil_baixo = projetil.y + 5
+
+            if (
+                projetil_direita > inimigo_esquerda
+                and projetil_esquerda < inimigo_direita
+                and projetil_baixo > inimigo_cima
+                and projetil_cima < inimigo_baixo
+            ):
+
+                inimigo.hp -= projetil.dano
+
+                projetis.remove(projetil)
+
+                break
+
+    for inimigo in inimigos[:]:
+
+        if inimigo.hp <= 0:
+            inimigos.remove(inimigo)
 
 
 def draw():
 
     pyxel.cls(0)
 
-    # TILEMAP
     pyxel.bltm(
-        0,
+        -camera_x,
         153,
         0,
         0,
@@ -78,18 +112,13 @@ def draw():
         20
     )
 
-
     if jogador.hp > 0:
 
-        jogador.desenhar()
+        jogador.desenhar(camera_x)
 
-
-        # INIMIGOS
         for inimigo in inimigos:
-            inimigo.desenhar()
+            inimigo.desenhar(camera_x)
 
-
-        # VIDA
         pyxel.rect(
             2,
             11,
@@ -106,7 +135,6 @@ def draw():
             7
         )
 
-
     else:
 
         pyxel.text(
@@ -116,10 +144,8 @@ def draw():
             7
         )
 
-
-    # PROJÉTEIS
     for projetil in projetis:
-        projetil.desenhar()
+        projetil.desenhar(camera_x)
 
 
 pyxel.init(161, 161)

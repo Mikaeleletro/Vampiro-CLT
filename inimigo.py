@@ -3,9 +3,9 @@ import pyxel
 
 class Inimigo():
 
-    def __init__(self, x, y,tipo):
+    def __init__(self, x, y, tipo):
 
-        self.hp = 1
+        self.hp = 2
         self.x = x
         self.y = y
         self.tipo = tipo
@@ -14,55 +14,95 @@ class Inimigo():
         self.contador_walk = 0
         self.direcao = "direita"
 
+
     def ataque(self, jogador):
 
-        distancia_x = abs(self.x - jogador.x)
-        distancia_y = abs(self.y - jogador.y)
+        inimigo_esquerda = self.x - 10
+        inimigo_direita = self.x + 6
 
-        distancia = ((distancia_x ** 2) + (distancia_y ** 2)) ** 0.5
+        inimigo_cima = self.y - 10
+        inimigo_baixo = self.y + 6
 
-        if distancia <= 10:
+        jogador_esquerda = jogador.x - 8
+        jogador_direita = jogador.x + 8
+
+        jogador_cima = jogador.y
+        jogador_baixo = jogador.y + 16
+
+        if (
+            inimigo_direita > jogador_esquerda
+            and inimigo_esquerda < jogador_direita
+            and inimigo_baixo > jogador_cima
+            and inimigo_cima < jogador_baixo
+        ):
+
             jogador.hp -= 1
+
 
     def movimento(self, jogador):
 
         velocidade = 1
 
-        direcao_x = jogador.x - self.x
-        direcao_y = jogador.y - self.y
-
-        distancia = ((direcao_x ** 2) + (direcao_y ** 2)) ** 0.5
-
-        if distancia > 10:
-
-            direcao_x /= distancia
-            direcao_y /= distancia
-
-            self.x += direcao_x * velocidade
-            self.y += direcao_y * velocidade
-
         if jogador.x > self.x:
+
+            self.x += velocidade
             self.direcao = "direita"
 
         elif jogador.x < self.x:
+
+            self.x -= velocidade
             self.direcao = "esquerda"
 
         self.animacao()
 
+
     def colisao(self, jogador):
 
-        distancia_x = self.x - jogador.x
-        distancia_y = self.y - jogador.y
+        inimigo_esquerda = self.x - 10
+        inimigo_direita = self.x + 6
 
-        distancia = ((distancia_x ** 2) + (distancia_y ** 2)) ** 0.5
+        inimigo_cima = self.y - 10
+        inimigo_baixo = self.y + 6
 
-        if distancia < 10 and distancia != 0:
+        jogador_esquerda = jogador.x - 8
+        jogador_direita = jogador.x + 8
 
-            distancia_x /= distancia
-            distancia_y /= distancia
+        jogador_cima = jogador.y
+        jogador_baixo = jogador.y + 16
 
-            self.x = jogador.x + distancia_x * 10
-            self.y = jogador.y + distancia_y * 10
+        if (
+            inimigo_direita > jogador_esquerda
+            and inimigo_esquerda < jogador_direita
+            and inimigo_baixo > jogador_cima
+            and inimigo_cima < jogador_baixo
+        ):
+
+            if self.x < jogador.x:
+
+                self.x = jogador.x - 18
+
+            else:
+
+                self.x = jogador.x + 18
+
+
+    def colisao_inimigo(self, outro):
+
+        distancia_x = outro.x - self.x
+        distancia = abs(distancia_x)
+
+        if distancia < 16:
+
+            if distancia_x > 0:
+
+                self.x -= 1
+                outro.x += 1
+
+            elif distancia_x < 0:
+
+                self.x += 1
+                outro.x -= 1
+
 
     def animacao(self):
 
@@ -73,19 +113,22 @@ class Inimigo():
             self.contador_walk = 0
 
             if self.walk == 32:
+
                 self.walk = 48
 
             elif self.walk == 48:
+
                 self.walk = 32
 
-    def desenhar(self):
+
+    def desenhar(self, camera_x):
 
         if self.tipo == 1:
 
             if self.direcao == "direita":
 
                 pyxel.blt(
-                    self.x - 10,
+                    self.x - camera_x - 10,
                     self.y - 10,
                     0,
                     self.walk,
@@ -98,7 +141,7 @@ class Inimigo():
             elif self.direcao == "esquerda":
 
                 pyxel.blt(
-                    self.x - 10,
+                    self.x - camera_x - 10,
                     self.y - 10,
                     0,
                     self.walk,
@@ -113,7 +156,7 @@ class Inimigo():
             if self.direcao == "direita":
 
                 pyxel.blt(
-                    self.x - 10,
+                    self.x - camera_x - 10,
                     self.y - 10,
                     0,
                     self.walk - 32,
@@ -126,7 +169,7 @@ class Inimigo():
             elif self.direcao == "esquerda":
 
                 pyxel.blt(
-                    self.x - 10,
+                    self.x - camera_x - 10,
                     self.y - 10,
                     0,
                     self.walk - 32,
@@ -135,19 +178,3 @@ class Inimigo():
                     16,
                     0
                 )
-    def colisao_inimigo(self, outro):
-
-        distancia_x = outro.x - self.x
-        distancia_y = outro.y - self.y
-
-        distancia = ((distancia_x ** 2) + (distancia_y ** 2)) ** 0.5
-
-        if distancia < 16:
-
-            if distancia != 0:
-
-                distancia_x /= distancia
-                distancia_y /= distancia
-
-                self.x -= distancia_x * 16
-                self.y -= distancia_y * 16
