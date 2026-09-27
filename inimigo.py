@@ -14,6 +14,9 @@ class Inimigo():
         self.contador_walk = 0
         self.direcao = "direita"
 
+        self.vy = 0
+        self.aceleracao = 0.8
+
 
     def ataque(self, jogador):
 
@@ -43,55 +46,38 @@ class Inimigo():
 
         velocidade = 1
 
-        if jogador.x > self.x:
+        distancia_x = jogador.x - self.x
 
-            self.x += velocidade
-            self.direcao = "direita"
+        if abs(distancia_x) > 18:
 
-        elif jogador.x < self.x:
+            if distancia_x > 0:
 
-            self.x -= velocidade
-            self.direcao = "esquerda"
+                self.x += velocidade
+                self.direcao = "direita"
+
+            elif distancia_x < 0:
+
+                self.x -= velocidade
+                self.direcao = "esquerda"
 
         self.animacao()
 
 
-    def colisao(self, jogador):
+    def gravidade(self):
 
-        inimigo_esquerda = self.x - 10
-        inimigo_direita = self.x + 6
+        self.vy += self.aceleracao
+        self.y += self.vy
 
-        inimigo_cima = self.y - 10
-        inimigo_baixo = self.y + 6
+        if self.y >= 135:
 
-        jogador_esquerda = jogador.x - 8
-        jogador_direita = jogador.x + 8
-
-        jogador_cima = jogador.y
-        jogador_baixo = jogador.y + 16
-
-        if (
-            inimigo_direita > jogador_esquerda
-            and inimigo_esquerda < jogador_direita
-            and inimigo_baixo > jogador_cima
-            and inimigo_cima < jogador_baixo
-        ):
-
-            if self.x < jogador.x:
-
-                self.x = jogador.x - 18
-
-            else:
-
-                self.x = jogador.x + 18
-
+            self.y = 135
+            self.vy = 0
 
     def colisao_inimigo(self, outro):
 
         distancia_x = outro.x - self.x
-        distancia = abs(distancia_x)
 
-        if distancia < 16:
+        if abs(distancia_x) < 16:
 
             if distancia_x > 0:
 

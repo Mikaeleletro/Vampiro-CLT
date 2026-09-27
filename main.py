@@ -41,7 +41,6 @@ def update():
 
         inimigo.movimento(jogador)
         inimigo.ataque(jogador)
-        inimigo.colisao(jogador)
 
     for i in range(len(inimigos)):
 
