@@ -9,6 +9,9 @@ class Personagem():
 
         self.direcao = "esquerda"
         self.hp = 1000
+        self.xp = 0
+        self.nivel = 1
+        self.xp_proximo_nivel = 20
 
         self.walk = 0
         self.contador_walk = 0
@@ -109,3 +112,17 @@ class Personagem():
         if pyxel.btnp(pyxel.KEY_SPACE):
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.vy = self.forca_pulo
+
+
+    def ganhar_xp(self, quantidade):
+
+        self.xp += quantidade
+
+        if self.xp >= self.xp_proximo_nivel:
+
+            self.nivel += 1
+            self.xp_proximo_nivel += 20
+
+            return True
+
+        return False
