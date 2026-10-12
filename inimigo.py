@@ -4,20 +4,23 @@ import pyxel
 class Inimigo():
 
     def __init__(self, x, y, tipo):
-
-        self.hp = 2
+        self.hp = 1
         self.x = x
         self.y = y
         self.tipo = tipo
-
+        if self.tipo == 1:
+            self.hp = 1
+        if self.tipo == 2:
+            self.hp = 2
+        if self.tipo == 3:
+            self.hp = 3
         self.walk = 32
         self.contador_walk = 0
         self.direcao = "direita"
 
         self.vy = 0
         self.aceleracao = 0.8
-
-
+            
     def ataque(self, jogador):
 
         inimigo_esquerda = self.x - 10
@@ -159,6 +162,34 @@ class Inimigo():
                     self.y - 10,
                     0,
                     self.walk - 32,
+                    16,
+                    -16,
+                    16,
+                    0
+                )
+        
+        elif self.tipo == 3:
+        
+            if self.direcao == "direita":
+
+                pyxel.blt(
+                    self.x - camera_x - 10,
+                    self.y - 3,
+                    0,
+                    self.walk,
+                    16,
+                    16,
+                    16,
+                    0
+                )
+
+            elif self.direcao == "esquerda":
+
+                pyxel.blt(
+                    self.x - camera_x - 10,
+                    self.y - 3,
+                    0,
+                    self.walk,
                     16,
                     -16,
                     16,
