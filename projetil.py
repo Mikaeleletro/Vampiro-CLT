@@ -55,7 +55,7 @@ class AtaqueEspecial:
         self.atualizar_posicao()
 
     def atualizar_posicao(self):
-        # Cola o ataque na frente do jogador dependendo de onde ele olha
+        # Cola o ataque na frente do jogador dependendo de onde ele olha(ataque melee)
         if self.jogador.direcao == "direita":
             self.x = self.jogador.x + 8
             self.largura = 16

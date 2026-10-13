@@ -42,13 +42,15 @@ class Inimigo():
             and inimigo_cima < jogador_baixo
         ):
 
-            jogador.hp -= 1
+            jogador.hp -= 3
 
 
     def movimento(self, jogador):
 
         velocidade = 1
-
+        #verifica se o jogador está na direita ou esquerda
+        #negativo[jogador está na esqueda no inimigo]
+        #positivo[jogador está na direita no inimigo]
         distancia_x = jogador.x - self.x
 
         if abs(distancia_x) > 18:

@@ -50,7 +50,6 @@ def desenhar_hud(jogador, tempo, derrotados):
     )
 
     pyxel.text(2, 24, "TEMPO: " + str(tempo) + "s", 7)
-    pyxel.text(70, 24, "INIMIGOS: " + str(derrotados), 7)
 
 
 def desenhar_game_over():
@@ -58,12 +57,12 @@ def desenhar_game_over():
     pyxel.rect(25, 55, 111, 51, 0)
     pyxel.rectb(25, 55, 111, 51, 8)
     pyxel.text(55, 66, "VOCE PERDEU!", 8)
-    pyxel.text(37, 84, "ENTER PARA TENTAR NOVAMENTE", 7)
+    pyxel.text(27, 84, "ENTER PARA TENTAR NOVAMENTE", 7)
 
 
 def desenhar_vitoria():
 
     pyxel.rect(25, 55, 111, 51, 0)
     pyxel.rectb(25, 55, 111, 51, 11)
-    pyxel.text(53, 66, "VOCE VENCEU!", 11)
-    pyxel.text(37, 84, "ENTER PARA JOGAR NOVAMENTE", 7)
+    pyxel.text(55, 66, "VOCE VENCEU!", 11)
+    pyxel.text(27, 84, "ENTER PARA JOGAR NOVAMENTE", 7)

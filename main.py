@@ -55,6 +55,7 @@ def iniciar_partida():
     global estado_jogo
     global contador_kills_upgrade
     
+    #inimigos
     jogador = Personagem()
     inimigos = [
         Inimigo(50, 145, 2),
@@ -78,6 +79,7 @@ def iniciar_partida():
 
 
 def update():
+    
     global contador_kills_upgrade
     global cooldown_tiro
     global camera_x
@@ -146,11 +148,6 @@ def update():
         sons.tocar_som(sons.SOM_GAME_OVER)
         return
 
-    # 3. Colisões Inimigo-Inimigo
-    for i in range(len(inimigos)):
-        for j in range(i + 1, len(inimigos)):
-            inimigos[i].colisao_inimigo(inimigos[j])
-
     # 4. Disparo de Projéteis Normais
     if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and cooldown_tiro == 0:
         novo_projetil = Projetil(jogador.x, jogador.y, jogador.direcao)
@@ -197,7 +194,8 @@ def update():
         if ataque.tempo_vida <= 0:
             ataques_especiais.remove(ataque)
             continue
-
+        
+        #hitbox inimigos e projetil
         for inimigo in inimigos:
             inimigo_esquerda = inimigo.x - 10
             inimigo_direita = inimigo.x + 6
@@ -221,10 +219,9 @@ def update():
                     ataque.dano = 0  # Descarrega o ataque para não bater várias vezes seguidas
                     criar_efeito(efeitos, inimigo.x, inimigo.y, 9, 8)
                 
-                # O comando "remove(ataque)" foi apagado daqui!
                 break
 
-    # 6. Remoção de Inimigos Mortos
+    # Remoção de Inimigos Mortos
     for inimigo in inimigos[:]:
         if inimigo.hp <= 0:
             inimigos.remove(inimigo)
@@ -294,7 +291,7 @@ def draw():
         pyxel.text(45, 57, "1 - Ataque Melee", 7)
         
         pyxel.rect(30, 80, 100, 20, 2)
-        pyxel.text(45, 87, "2 - Tiro Mais Rapido", 7) # NOVO TEXTO
+        pyxel.text(45, 87, "2 - Tiro Mais Rapido", 7) 
 
 
 pyxel.init(161, 161)
