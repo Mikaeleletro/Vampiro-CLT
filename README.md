@@ -9,28 +9,41 @@ Jogo de plataforma desenvolvido em Python utilizando a biblioteca Pyxel.
 * **Espaço**: pular
 * **Botão esquerdo do mouse**: atirar
 
+## Objetivo
+
+Sobreviva por 120 segundos enquanto novas ondas de inimigos aparecem durante a partida.
+
 ## Mecânicas
 
 * Movimento horizontal do jogador
 * Pulo e gravidade
 * Inimigos que perseguem o jogador
 * Diferentes tipos de inimigos
+* Velocidade, vida e dano diferentes por tipo de inimigo
+* Spawn aleatório de inimigos
+* Sistema de ondas a cada 20 segundos
+* Limite de inimigos simultâneos
 * Sistema de vida
 * Sistema de dano
 * Projéteis
 * Hitbox dos projéteis
 * Animação dos personagens
-* Colisão entre inimigos
 * Câmera com movimentação horizontal
 * Tilemap para o cenário
+* Sistema de XP e upgrades
+* Vitória ao sobreviver 120 segundos
 
 ## Inimigos
 
-Os inimigos perseguem o jogador apenas horizontalmente.
+Os inimigos perseguem o jogador horizontalmente.
 
-O jogador pode atravessar os inimigos.
+Tipo 1 é o inimigo comum.
 
-Os inimigos possuem vida própria e podem ser derrotados pelos projéteis.
+Tipo 2 é mais lento e resistente.
+
+Tipo 3 é mais rápido e possui vida intermediária.
+
+Novos inimigos aparecem fora da tela conforme o tempo da partida aumenta.
 
 ## Tecnologias
 
@@ -62,6 +75,11 @@ Vampiro-CLT/
 ├── jogador.py
 ├── inimigo.py
 ├── projetil.py
+├── efeitos.py
+├── mapa.py
+├── sons.py
+├── telas.py
+├── musica.py
 ├── my_resource.pyxres
 └── README.md
 ```

@@ -26,6 +26,13 @@ VITORIA = "vitoria"
 UPGRADE = "upgrade"
 contador_kills_upgrade = 0
 
+MIN_INIMIGOS = 8
+MAX_INIMIGOS = 10
+DISTANCIA_MINIMA_SPAWN = 35
+MAX_INIMIGOS_VIVOS = 18
+TEMPO_ENTRE_ONDAS = 8
+TEMPO_VITORIA = 120
+
 projetis = []
 ataques_especiais = []
 efeitos = []
@@ -33,11 +40,103 @@ cooldown_tiro = 0
 camera_x = 0
 
 inimigos_derrotados = 0
-tempo_inicio = 0
 tempo_partida = 0
+frames_partida = 0
+proxima_onda = TEMPO_ENTRE_ONDAS
+onda_atual = 0
 estado_jogo = MENU
 
 mapa = Mapa()
+
+
+def criar_inimigos():
+
+    inimigos_criados = []
+    quantidade = pyxel.rndi(MIN_INIMIGOS, MAX_INIMIGOS)
+
+    while len(inimigos_criados) < quantidade:
+
+        tipo = pyxel.rndi(1, 3)
+        x = pyxel.rndi(120, 950)
+
+        if tipo == 1:
+            y = 140
+        elif tipo == 2:
+            y = 145
+        else:
+            y = 139
+
+        pode_spawnar = True
+
+        for inimigo in inimigos_criados:
+            if abs(x - inimigo.x) < DISTANCIA_MINIMA_SPAWN:
+                pode_spawnar = False
+                break
+
+        if pode_spawnar:
+            inimigos_criados.append(Inimigo(x, y, tipo))
+
+    return inimigos_criados
+
+
+def criar_onda(quantidade):
+
+    espacos_disponiveis = MAX_INIMIGOS_VIVOS - len(inimigos)
+
+    if espacos_disponiveis <= 0:
+        return
+
+    if quantidade > espacos_disponiveis:
+        quantidade = espacos_disponiveis
+
+    inimigos_criados = 0
+    tentativas = 0
+
+    while inimigos_criados < quantidade and tentativas < 60:
+
+        tentativas += 1
+        tipo = pyxel.rndi(1, 3)
+
+        if jogador.x < 120:
+            lado = "direita"
+
+        elif jogador.x > 830:
+            lado = "esquerda"
+
+        else:
+            if pyxel.rndi(0, 1) == 0:
+                lado = "esquerda"
+            else:
+                lado = "direita"
+
+        if lado == "direita":
+            x = jogador.x + pyxel.rndi(100, 180)
+        else:
+            x = jogador.x - pyxel.rndi(100, 180)
+
+        if x < 30:
+            x = 30
+
+        if x > 950:
+            x = 950
+
+        if tipo == 1:
+            y = 140
+        elif tipo == 2:
+            y = 145
+        else:
+            y = 139
+
+        pode_spawnar = True
+
+        for inimigo in inimigos:
+            if abs(x - inimigo.x) < DISTANCIA_MINIMA_SPAWN:
+                pode_spawnar = False
+                break
+
+        if pode_spawnar:
+            inimigos.append(Inimigo(x, y, tipo))
+            inimigos_criados += 1
 
 
 def iniciar_partida():
@@ -50,20 +149,16 @@ def iniciar_partida():
     global cooldown_tiro
     global camera_x
     global inimigos_derrotados
-    global tempo_inicio
     global tempo_partida
+    global frames_partida
+    global proxima_onda
+    global onda_atual
     global estado_jogo
     global contador_kills_upgrade
     
     #inimigos
     jogador = Personagem()
-    inimigos = [
-        Inimigo(50, 145, 2),
-        Inimigo(100, 140, 1),
-        Inimigo(200,139,3),
-        Inimigo(235,139,3),
-        Inimigo(250,139,3)
-    ]
+    inimigos = criar_inimigos()
 
     projetis = []
     ataques_especiais = []
@@ -73,8 +168,10 @@ def iniciar_partida():
 
     inimigos_derrotados = 0
     contador_kills_upgrade = 0
-    tempo_inicio = pyxel.frame_count
     tempo_partida = 0
+    frames_partida = 0
+    proxima_onda = TEMPO_ENTRE_ONDAS
+    onda_atual = 0
     estado_jogo = JOGANDO
 
 
@@ -85,6 +182,9 @@ def update():
     global camera_x
     global inimigos_derrotados
     global tempo_partida
+    global frames_partida
+    global proxima_onda
+    global onda_atual
     global estado_jogo
 
     if estado_jogo == MENU:
@@ -109,8 +209,21 @@ def update():
             estado_jogo = JOGANDO
             
         return 
-            
-    tempo_partida = (pyxel.frame_count - tempo_inicio) // 30
+
+    frames_partida += 1
+    tempo_partida = frames_partida // 30
+
+    if tempo_partida >= TEMPO_VITORIA:
+        estado_jogo = VITORIA
+        sons.tocar_som(sons.SOM_VITORIA)
+        return
+
+    # Ondas de inimigos
+    if tempo_partida >= proxima_onda:
+        onda_atual += 1
+        quantidade_novos = 2 + onda_atual
+        criar_onda(quantidade_novos)
+        proxima_onda += TEMPO_ENTRE_ONDAS
 
     # Lógica Automática do Ataque Especial
     if jogador.tipo_ataque_especial == 1:
@@ -240,10 +353,6 @@ def update():
                 sons.tocar_som(sons.SOM_LEVEL_UP)
             else:
                 sons.tocar_som(sons.SOM_INIMIGO_DERROTADO)
-        
-    if len(inimigos) == 0:
-        estado_jogo = VITORIA
-        sons.tocar_som(sons.SOM_VITORIA)
 
 
 def draw():
@@ -270,9 +379,14 @@ def draw():
 
     desenhar_efeitos(efeitos, camera_x)
 
+    tempo_restante = TEMPO_VITORIA - tempo_partida
+
+    if tempo_restante < 0:
+        tempo_restante = 0
+
     desenhar_hud(
         jogador,
-        tempo_partida,
+        tempo_restante,
         inimigos_derrotados
     )
 

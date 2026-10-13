@@ -8,12 +8,25 @@ class Inimigo():
         self.x = x
         self.y = y
         self.tipo = tipo
+
+        self.velocidade = 1
+        self.dano = 2
+
         if self.tipo == 1:
             self.hp = 1
+            self.velocidade = 1
+            self.dano = 2
+
         if self.tipo == 2:
-            self.hp = 2
-        if self.tipo == 3:
             self.hp = 3
+            self.velocidade = 0.7
+            self.dano = 4
+
+        if self.tipo == 3:
+            self.hp = 2
+            self.velocidade = 1.6
+            self.dano = 3
+
         self.walk = 32
         self.contador_walk = 0
         self.direcao = "direita"
@@ -42,12 +55,12 @@ class Inimigo():
             and inimigo_cima < jogador_baixo
         ):
 
-            jogador.hp -= 3
+            jogador.hp -= self.dano
 
 
     def movimento(self, jogador):
 
-        velocidade = 1
+        velocidade = self.velocidade
         #verifica se o jogador está na direita ou esquerda
         #negativo[jogador está na esqueda no inimigo]
         #positivo[jogador está na direita no inimigo]

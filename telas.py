@@ -18,7 +18,7 @@ def desenhar_menu():
 
     pyxel.cls(0)
     pyxel.text(57, 42, "VAMPIRO CLT", 7)
-    pyxel.text(33, 58, "DERROTE TODOS OS INIMIGOS", 6)
+    pyxel.text(31, 58, "SOBREVIVA POR 120 SEGUNDOS", 6)
 
     mouse_no_botao = (
         40 <= pyxel.mouse_x <= 120
@@ -38,7 +38,7 @@ def desenhar_hud(jogador, tempo, derrotados):
     pyxel.rect(0, 0, 161, 32, 0)
     pyxel.text(2, 2, "VIDA: " + str(jogador.hp), 7)
 
-    pyxel.rect(2, 11, 49 * (jogador.hp / 1000), 9, 8)
+    pyxel.rect(2, 11, 49 * (jogador.hp / 300), 9, 8)
     pyxel.rectb(1, 10, 50, 10, 7)
 
     pyxel.text(58, 2, "NIVEL: " + str(jogador.nivel), 7)
@@ -49,7 +49,8 @@ def desenhar_hud(jogador, tempo, derrotados):
         7
     )
 
-    pyxel.text(2, 24, "TEMPO: " + str(tempo) + "s", 7)
+    pyxel.text(2, 24, "RESTA: " + str(tempo) + "s", 7)
+    pyxel.text(100, 24, "KILLS: " + str(derrotados), 7)
 
 
 def desenhar_game_over():

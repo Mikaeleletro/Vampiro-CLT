@@ -8,7 +8,7 @@ class Personagem():
         self.y = 135
 
         self.direcao = "esquerda"
-        self.hp = 1000
+        self.hp = 300
         self.xp = 0
         self.nivel = 1
         self.xp_proximo_nivel = 20
