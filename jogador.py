@@ -88,6 +88,9 @@ class Personagem():
 
 
     def colisao(self):
+        
+        # Presumimos que está no ar até bater no chão
+        self.no_chao = False
 
         if self.x <= 0:
             self.x = 0
@@ -95,6 +98,7 @@ class Personagem():
         if self.y >= 136:
             self.y = 136
             self.vy = 0
+            self.no_chao = True  # O jogador tocou no chão e pode saltar
 
         if self.y <= 0:
             self.y = 0
@@ -109,9 +113,8 @@ class Personagem():
 
     def pulo(self):
 
-        if pyxel.btnp(pyxel.KEY_SPACE):
-            if pyxel.btnp(pyxel.KEY_SPACE):
-                self.vy = self.forca_pulo
+        if pyxel.btnp(pyxel.KEY_SPACE) and self.no_chao:
+            self.vy = self.forca_pulo
 
 
     def ganhar_xp(self, quantidade):

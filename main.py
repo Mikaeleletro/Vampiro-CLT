@@ -23,6 +23,8 @@ MENU = "menu"
 JOGANDO = "jogando"
 GAME_OVER = "game_over"
 VITORIA = "vitoria"
+UPGRADE = "upgrade"
+contador_kills_upgrade = 0
 
 projetis = []
 efeitos = []
@@ -50,12 +52,15 @@ def iniciar_partida():
     global tempo_inicio
     global tempo_partida
     global estado_jogo
-
+    global contador_kills_upgrade
+    
     # Recria o jogador e a lista de inimigos do zero ao reiniciar a partida
     jogador = Personagem()
     inimigos = [
-        #Inimigo(50, 160, 2),
-        #Inimigo(100, 140, 1),
+        Inimigo(50, 160, 2),
+        Inimigo(100, 140, 1),
+        Inimigo(200,160,3),
+        Inimigo(200,160,3),
         Inimigo(200,160,3)
     ]
 
@@ -65,13 +70,14 @@ def iniciar_partida():
     camera_x = 0
 
     inimigos_derrotados = 0
+    contador_kills_upgrade = 0
     tempo_inicio = pyxel.frame_count
     tempo_partida = 0
     estado_jogo = JOGANDO
 
 
 def update():
-
+    global contador_kills_upgrade
     global cooldown_tiro
     global camera_x
     global inimigos_derrotados
@@ -87,7 +93,15 @@ def update():
         if pyxel.btnp(pyxel.KEY_RETURN):
             iniciar_partida()
         return
-
+    
+    if estado_jogo == UPGRADE:
+        if pyxel.btnp(pyxel.KEY_1):
+            estado_jogo = JOGANDO
+            
+        elif pyxel.btnp(pyxel.KEY_2):
+            estado_jogo = JOGANDO
+        return 
+            
     tempo_partida = (pyxel.frame_count - tempo_inicio) // 30
 
     atualizar_efeitos(efeitos)
@@ -161,6 +175,12 @@ def update():
         if inimigo.hp <= 0:
             inimigos.remove(inimigo)
             inimigos_derrotados += 1
+            contador_kills_upgrade += 1
+            
+            if contador_kills_upgrade >= 3:
+                estado_jogo = UPGRADE
+                contador_kills_upgrade = 0
+                
             subiu_nivel = jogador.ganhar_xp(10)
             criar_efeito(efeitos, inimigo.x, inimigo.y, 8, 8)
 
@@ -207,6 +227,22 @@ def draw():
         desenhar_game_over()
     elif estado_jogo == VITORIA:
         desenhar_vitoria()
+    
+    elif estado_jogo == UPGRADE:
+        # Fundo escuro
+        pyxel.rect(20, 20, 120, 100, 0)
+        pyxel.rectb(20, 20, 120, 100, 7)
+        
+        # Título
+        pyxel.text(35, 30, "ESCOLHA UM UPGRADE", 10)
+        
+        # Botão Opção 1
+        pyxel.rect(30, 50, 100, 20, 1)
+        pyxel.text(45, 57, "1 - Escolha 1", 7)
+        
+        # Botão Opção 2
+        pyxel.rect(30, 80, 100, 20, 2)
+        pyxel.text(45, 87, "2 - Escolha 2", 7)
 
 
 pyxel.init(161, 161)
