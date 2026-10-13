@@ -66,16 +66,6 @@ class Inimigo():
         self.animacao()
 
 
-    def gravidade(self):
-
-        self.vy += self.aceleracao
-        self.y += self.vy
-
-        if self.y >= 135:
-
-            self.y = 135
-            self.vy = 0
-
     def colisao_inimigo(self, outro):
 
         distancia_x = outro.x - self.x

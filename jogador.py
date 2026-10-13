@@ -21,6 +21,11 @@ class Personagem():
         self.forca_pulo = -8
 
         self.no_chao = False
+        
+        # Variáveis de Upgrade
+        self.tipo_ataque_especial = 0 
+        self.cooldown_especial = 0
+        self.limite_cooldown_tiro = 20 # NOVO: Começa com 20 frames de intervalo no tiro normal
 
 
     def movimento(self):
@@ -89,7 +94,6 @@ class Personagem():
 
     def colisao(self):
         
-        # Presumimos que está no ar até bater no chão
         self.no_chao = False
 
         if self.x <= 0:
@@ -98,7 +102,7 @@ class Personagem():
         if self.y >= 136:
             self.y = 136
             self.vy = 0
-            self.no_chao = True  # O jogador tocou no chão e pode saltar
+            self.no_chao = True 
 
         if self.y <= 0:
             self.y = 0
@@ -129,6 +133,3 @@ class Personagem():
             return True
 
         return False
-
-
-

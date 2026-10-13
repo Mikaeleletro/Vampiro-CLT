@@ -2,7 +2,7 @@ import pyxel
 
 from jogador import Personagem
 from inimigo import Inimigo
-from projetil import Projetil
+from projetil import Projetil, AtaqueEspecial
 from mapa import Mapa
 
 from efeitos import (
@@ -27,6 +27,7 @@ UPGRADE = "upgrade"
 contador_kills_upgrade = 0
 
 projetis = []
+ataques_especiais = []
 efeitos = []
 cooldown_tiro = 0
 camera_x = 0
@@ -36,7 +37,6 @@ tempo_inicio = 0
 tempo_partida = 0
 estado_jogo = MENU
 
-# Instanciação corrigida (sem passar parâmetros não aceites pelo construtor)[cite: 12, 13]
 mapa = Mapa()
 
 
@@ -45,6 +45,7 @@ def iniciar_partida():
     global jogador
     global inimigos
     global projetis
+    global ataques_especiais
     global efeitos
     global cooldown_tiro
     global camera_x
@@ -54,17 +55,17 @@ def iniciar_partida():
     global estado_jogo
     global contador_kills_upgrade
     
-    # Recria o jogador e a lista de inimigos do zero ao reiniciar a partida
     jogador = Personagem()
     inimigos = [
-        Inimigo(50, 160, 2),
+        Inimigo(50, 145, 2),
         Inimigo(100, 140, 1),
-        Inimigo(200,160,3),
-        Inimigo(200,160,3),
-        Inimigo(200,160,3)
+        Inimigo(200,139,3),
+        Inimigo(235,139,3),
+        Inimigo(250,139,3)
     ]
 
     projetis = []
+    ataques_especiais = []
     efeitos = []
     cooldown_tiro = 0
     camera_x = 0
@@ -96,13 +97,28 @@ def update():
     
     if estado_jogo == UPGRADE:
         if pyxel.btnp(pyxel.KEY_1):
+            jogador.tipo_ataque_especial = 1
             estado_jogo = JOGANDO
             
         elif pyxel.btnp(pyxel.KEY_2):
+            # NOVO: Reduz o cooldown do tiro normal (limite mínimo de 5 frames)
+            if jogador.limite_cooldown_tiro > 5:
+                jogador.limite_cooldown_tiro -= 5
             estado_jogo = JOGANDO
+            
         return 
             
     tempo_partida = (pyxel.frame_count - tempo_inicio) // 30
+
+    # Lógica Automática do Ataque Especial
+    if jogador.tipo_ataque_especial == 1:
+        if jogador.cooldown_especial > 0:
+            jogador.cooldown_especial -= 1
+        else:
+            novo_ataque = AtaqueEspecial(jogador, 3, [0, 16], 32)
+            jogador.cooldown_especial = 150 # 5 segundos
+            ataques_especiais.append(novo_ataque)
+            sons.tocar_som(sons.SOM_TIRO)
 
     atualizar_efeitos(efeitos)
 
@@ -123,7 +139,6 @@ def update():
     for inimigo in inimigos:
         inimigo.movimento(jogador)
         inimigo.ataque(jogador)
-        inimigo.gravidade()  # Correção: Gravidade agora é aplicada
 
     if jogador.hp <= 0:
         jogador.hp = 0
@@ -136,11 +151,14 @@ def update():
         for j in range(i + 1, len(inimigos)):
             inimigos[i].colisao_inimigo(inimigos[j])
 
-    # 4. Disparo de Projéteis
+    # 4. Disparo de Projéteis Normais
     if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and cooldown_tiro == 0:
         novo_projetil = Projetil(jogador.x, jogador.y, jogador.direcao)
         projetis.append(novo_projetil)
-        cooldown_tiro = 20
+        
+        # NOVO: Usa a variável do jogador em vez do número 20 fixo
+        cooldown_tiro = jogador.limite_cooldown_tiro 
+        
         criar_efeito(efeitos, jogador.x, jogador.y + 10, 10, 3)
         sons.tocar_som(sons.SOM_TIRO)
 
@@ -166,8 +184,44 @@ def update():
                 and projetil_cima < inimigo_baixo
             ):
                 inimigo.hp -= projetil.dano
-                projetis.remove(projetil)
+                if projetil in projetis:
+                    projetis.remove(projetil)
                 criar_efeito(efeitos, inimigo.x, inimigo.y, 7, 3)
+                break
+
+    # 5.5 Colisão Ataque Especial (Melee) - Inimigo
+    for ataque in ataques_especiais[:]:
+        ataque.movimento()
+        
+        # Apaga o ataque apenas quando o tempo da animação acabar naturalmente
+        if ataque.tempo_vida <= 0:
+            ataques_especiais.remove(ataque)
+            continue
+
+        for inimigo in inimigos:
+            inimigo_esquerda = inimigo.x - 10
+            inimigo_direita = inimigo.x + 6
+            inimigo_cima = inimigo.y - 10
+            inimigo_baixo = inimigo.y + 6
+
+            ataque_esquerda = ataque.x
+            ataque_direita = ataque.x + 16
+            ataque_cima = ataque.y
+            ataque_baixo = ataque.y + 16
+
+            if (
+                ataque_direita > inimigo_esquerda
+                and ataque_esquerda < inimigo_direita
+                and ataque_baixo > inimigo_cima
+                and ataque_cima < inimigo_baixo
+            ):
+                # Se o ataque ainda não bateu em ninguém, causa o dano
+                if ataque.dano > 0:
+                    inimigo.hp -= ataque.dano
+                    ataque.dano = 0  # Descarrega o ataque para não bater várias vezes seguidas
+                    criar_efeito(efeitos, inimigo.x, inimigo.y, 9, 8)
+                
+                # O comando "remove(ataque)" foi apagado daqui!
                 break
 
     # 6. Remoção de Inimigos Mortos
@@ -201,7 +255,6 @@ def draw():
         desenhar_menu()
         return
 
-    # Limpa a tela e desenha as camadas pela ordem correta
     mapa.desenhar_fundo_paralaxe_2(camera_x)
     mapa.desenhar_fundo_paralaxe_1(camera_x)
     mapa.desenhar_mapa_principal(camera_x)
@@ -214,6 +267,9 @@ def draw():
 
     for projetil in projetis:
         projetil.desenhar(camera_x)
+
+    for ataque in ataques_especiais:
+        ataque.desenhar(camera_x)
 
     desenhar_efeitos(efeitos, camera_x)
 
@@ -229,20 +285,16 @@ def draw():
         desenhar_vitoria()
     
     elif estado_jogo == UPGRADE:
-        # Fundo escuro
         pyxel.rect(20, 20, 120, 100, 0)
         pyxel.rectb(20, 20, 120, 100, 7)
         
-        # Título
         pyxel.text(35, 30, "ESCOLHA UM UPGRADE", 10)
         
-        # Botão Opção 1
         pyxel.rect(30, 50, 100, 20, 1)
-        pyxel.text(45, 57, "1 - Escolha 1", 7)
+        pyxel.text(45, 57, "1 - Ataque Melee", 7)
         
-        # Botão Opção 2
         pyxel.rect(30, 80, 100, 20, 2)
-        pyxel.text(45, 87, "2 - Escolha 2", 7)
+        pyxel.text(45, 87, "2 - Tiro Mais Rapido", 7) # NOVO TEXTO
 
 
 pyxel.init(161, 161)
